@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Spotify Saver</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  </head>
+
+  <body>
+
+
+    <div class="container">
+      <div id="login">
+        <img src="./img/black-logo.png" id="spotifyblack" alt="Black Spotify Logo">
+        <h2>Save your favorite playlist with a single click</h2>
+        <h3>Log in to your Spotify account to begin</h3>
+        <a href="/login" class="btn btn-primary" id="login-btn">Log in</a>
+      </div>
+      <div id="loggedin">
+        <header>
+          <div id="user-profile">
+          </div>
+        </header>
+      <div class="flex-container playlist">
+        <div class="row iframes">
+          <div class= "col-md-6">
+            <iframe  src="https://embed.spotify.com/?uri=spotify:user:122074963:playlist:6x3expqLVKNUnT8FuhJpcc" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
+          </div>
+          <div class= "col-md-6">
+            <iframe  src="https://embed.spotify.com/?uri=spotify:user:122074963:playlist:7xlY2FU3cZZEEvQ4Sy0XTm" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
+          </div>
+
+          <div class="col-xs-12 hidden-sm hidden-md hidden-lg mobile">
+            <iframe class="img-responsive" src="https://embed.spotify.com/?uri=spotify:user:122074963:playlist:6x3expqLVKNUnT8FuhJpcc" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
+            <iframe class="img-responsive" src="https://embed.spotify.com/?uri=spotify:user:122074963:playlist:7xlY2FU3cZZEEvQ4Sy0XTm" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
+          </div>
+        </div>
+        <div class="row">
+          <button type="button" class="btn btn-default" id="save"  data-toggle="modal" data-target="#myModal" name="button">Save this week's playlist</button>
+        </div>
+      </div>
+      <ul class="weeksongs">
+      </ul>
+
+    </div>
+    </div>
+
+        <script id="user-profile-template" type="text/x-handlebars-template">
+            <div class="logo">
+              <img src="./img/green-logo.png" id="greenLogo" alt="Green Spotify Logo">
+              <h1>Saver</h1>
+            </div>
+          <div class="media">
+            <h3>Welcome, {{display_name}}</h3>
+            <div class="pull-right">
+              <img class="media-object" width="50" src="{{images.0.url}}" />
+            </div>
+
+          </div>
+        </script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script>
+          (function() {
+
+          console.log('it works!');
+            /**
+             * Obtains parameters from the hash of the URL
+             * @return Object
+             */
+            function getHashParams() {
+              var hashParams = {};
+              var e, r = /([^&;=]+)=?([^&;]*)/g,
+                  q = window.location.hash.substring(1);
+              while ( e = r.exec(q)) {
+                 hashParams[e[1]] = decodeURIComponent(e[2]);
+              }
+              return hashParams;
+            }
+
+            var userProfileSource = document.getElementById('user-profile-template').innerHTML,
+                userProfileTemplate = Handlebars.compile(userProfileSource),
+                userProfilePlaceholder = document.getElementById('user-profile');
+
+
+            var params = getHashParams();
+
+            var access_token = params.access_token,
+                refresh_token = params.refresh_token,
+                error = params.error;
+
+            if (error) {
+              alert('There was an error during the authentication');
+            } else {
+              if (access_token) {
+
+
+                $.ajax({
+                    url: 'https://api.spotify.com/v1/me',
+                    headers: {
+                      'Authorization': 'Bearer ' + access_token
+                    },
+                    success: function(response) {
+                      userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+
+                      $('#login').hide();
+                      $('#loggedin').show();
+                    }
+                });
+              } else {
+                  // render initial screen
+                  $('#login').show();
+                  $('#loggedin').hide();
+              }
+
+            }
+
+            $('#save').on('click',function () {
+              $.ajax({  // GET tracks from API
+                      url: 'https://api.spotify.com/v1/users/122074963/playlists/6x3expqLVKNUnT8FuhJpcc/tracks',
+                      method: "GET",
+                      headers: {
+                        'Authorization': 'Bearer ' + access_token
+                      },
+                      success: function(response) {
+                        console.log(response.items);
+                        var list = response.items;
+                        var tracks = [];
+                        for (var i = 0; i < list.length; i++) {
+                            var music = list[i].track
+                            var uri = music.uri;
+                            console.log(uri);
+                            tracks.push(uri);
+
+                            }//end for loop
+                            console.log(tracks)
+
+                            $.ajax({ //add songs to new playlist
+                                  url: 'https://api.spotify.com/v1/users/122074963/playlists/7xlY2FU3cZZEEvQ4Sy0XTm/tracks',
+                                  method: "POST",
+                                  data: JSON.stringify({
+                                    "uris": tracks
+                                  }),
+                                   headers: {
+                                     'Authorization': 'Bearer ' + access_token
+                                    //  'Content-Type': 'application/json'
+                                   },
+                                   success: function(res) {
+                                     console.log(res);
+                                   },
+                                   error: function(err, msg) {
+                                     console.log('error: ', err, msg)
+                                   }
+                                 }); //end of POST request
+
+                         } //end of success function
+                    });//end of GET request
+            }); // end of #save function
+
+
+          })();
+        </script>
+      </body>
+    </html>

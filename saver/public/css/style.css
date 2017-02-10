@@ -1,0 +1,106 @@
+body{
+  background-color: #37b53e;
+  width: 100vw;
+  font-family: 'Montserrat', sans-serif;
+
+
+}
+.container{
+  width: 100vw;
+}
+h1{
+  color: #fff;
+  text-align: center;
+  font-size: 6vw;
+}
+h2{
+  color: #fff;
+}
+h3{
+  color: #fff;
+  text-align: right;
+  font-size: 20px;
+  display: flex;
+  align-items: flex-end;
+}
+#login, #loggedin {
+  display: none;
+  width: 100vw;
+}
+
+
+/*login page*/
+#login{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-direction: column;
+  margin-top: 15%;
+}
+
+#login-btn{
+  background-color: #000;
+  border: none;
+  border-radius: none;
+}
+#greenLogo{
+  width: 30%;
+  height: 30%;
+}
+/*header & header contents*/
+header{
+  background-color: #000;
+  margin-top: -20px;
+  width: 100vw;
+  margin-left: -1.2%;
+
+}
+#user-profile{
+  width: 100vw;
+
+}
+.logo{
+  display: flex;
+  justify-content: center;
+  padding-top: 3%;
+  padding-bottom: 0;
+}
+#spotifyblack{
+  max-width: 15%;
+}
+
+
+/*logged in content*/
+
+.text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 500px;
+}
+.playlist{
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+}
+.media{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.iframes{
+  margin-top: 5%;
+}
+button{
+  margin-top: 2%;
+}
+
+
+#save{
+  background-color: #242424;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+}
